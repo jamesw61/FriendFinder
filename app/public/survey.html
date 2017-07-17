@@ -10,13 +10,13 @@
 </head>
 
 <body class="grey lighten-3">
-    <a href="#" data-activates="slide-out" class="button-collapse"><i class="medium material-icons indigo-text">menu</i></a>
+    <a href="#" data-activates="slide-out" class="button-collapse" style="position: fixed;"><i class="medium material-icons indigo-text">menu</i></a>
     <ul id="slide-out" class="side-nav">
         <br>
         <br>
         <li><a href="/">Start Over</a></li>
         <li><a href="/friends">API Friends List</a></li>
-        <li><a class="waves-effect" href="https://github.com/jamesw61/FriendFinder">Github Repo</a></li>
+        <li><a class="waves-effect" href="https://github.com/jamesw61/FriendFinder" target="_blank">Github Repo</a></li>
     </ul>
     <main>
         <div class="container">
@@ -65,12 +65,13 @@
 const questionArray = [
     'Do you like to wear sleeveless flannel shirts?',
     'Do you like to get things done?'
-    //,
-    //'Do you have 2 brothers named Darryl?', 
-    //'Do you like to hang out at the Regal Beagle?',
-    //'Do you sell used cars?',
-    //"Do you think you could kick Floyd Mayweather's ass if you were 50 years younger?",
-    //'Do you dislike Mariachi music?',
+    // ,
+    // 'Do you have 2 brothers named Darryl?', 
+    // 'Do you like to hang out at the Regal Beagle?',
+    // 'Do you sell used cars?',
+    // "Do you think you could kick Floyd Mayweather's ass if you were 50 years younger?",
+    // 'Do you dislike Mariachi music?',
+    // 'Does your brother repeatedly hit you in the face?'
    ] ;
 for (var key = 0; key < questionArray.length; key++) {
     var num = key + 1;
@@ -96,28 +97,23 @@ $(".button-collapse").sideNav();
 
 $(".btn-large").on("click", function(event) {
     event.preventDefault();
+    let answers = [];
+    for(let i = 0; i < questionArray.length; i++){
+        answers.push($('#dropdown' + (i+1) + ' option:selected').attr('value'))
+    }
     var newCharacter = {
         name: $("#first_name").val().trim(),
         photo: $("#photo").val().trim(),
-        scores: [$('#dropdown1 option:selected').attr('value'),
-            $('#dropdown2 option:selected').attr('value')]
-            //,
-            //$('#dropdown3 option:selected').attr('value'),
-        
-         //$('#dropdown4 option:selected').attr('value'),
-        // $('#dropdown5 option:selected').attr('value'),
-        // $('#dropdown6 option:selected').attr('value'),
-        // $('#dropdown7 option:selected').attr('value'),]
-        // q8: $('#dropdown8 option:selected').attr('value'),
-        // q9: $('#dropdown9 option:selected').attr('value'),
-        // q10: $('#dropdown10 option:selected').attr('value')
+        scores: answers       
     };
 
     $.post("/new", newCharacter)
         .done(function(data) {
+            console.log('*****************');
             console.log(data);
-            $('#matchedName').html(`<h4 style="text-align: center">${data.name} is your match!</h4><br>`);
-            $('#matchedImage').html(`<img style="display: block; margin: auto; max-height: 300px" src="${data.photo}">`);
+            console.log('*****************');
+            $('#matchedName').html(`<h4 style="text-align: center">${data[0].name} is your match!</h4><br>`);
+            $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[0].photo}">`);
             $('#modal1').modal('open');
         });
 });
