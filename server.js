@@ -4,7 +4,8 @@ var bodyParser = require('body-parser');
 var path = require('path');
 var app = express();
 var PORT = process.env.PORT || 3000;
-const log = x => console.log(x);
+// var friends = require('../data/friends.js');
+
 
 
 app.use(bodyParser.json());
@@ -12,23 +13,14 @@ app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: 'application/json'}));
 app.use(express.static(path.join(__dirname)));
+require('./app/routing/apiRoutes.js')(app);
+require('./app/routing/htmlRoutes.js')(app);
 
 
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname,"/app/public/home.html"));
-});
 
-app.get('/survey.html', (req, res) => {
-    res.sendFile(path.join(__dirname,"/app/public/survey.html"));
-});
-
-app.post("/api/new", (req,res) => {
-	var newCharacter = req.body;
-	log(newCharacter);
-});
 
 app.listen(PORT, () => {
-    log(`Listening on ${PORT}`);
+    console.log(`Listening on ${PORT}`);
 });
 
 
