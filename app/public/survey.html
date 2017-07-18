@@ -28,27 +28,35 @@
                         <div class="row">
                             <div class="input-field col s4">
                                 <input placeholder="Enter Your First Name" id="first_name" type="text" class="validate">
-                                <label class="active" for="first_name"><h5>First Name (Required)</h5></label>
+                                <label class="active" for="first_name">
+                                    <h5>First Name (Required)</h5></label>
                             </div>
                             <div class="input-field col s8">
                                 <input placeholder="Paste a Link to Your Photo" id="photo" type="text" class="validate">
-                                <label class="active" for="photo"><h5>Link to Photo (Required)</h5></label>
+                                <label class="active" for="photo">
+                                    <h5>Link to Photo (Required)</h5></label>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="questions">
                 </div>
-            </div>
-            <br>
-            <a class="waves-effect waves-light btn-large indigo"><i class="material-icons left">done</i>Submit</a>
-            <br>
-            <br>
+            </div><br>
+            <a class="waves-effect waves-light btn-large indigo"><i class="material-icons left">done</i>Submit</a><br><br>
             <br>
             <div id="modal1" class="modal" style="background-color: #d6e1ff;">
                 <div class="modal-content">
                     <h4 id="matchedName"></h4>
                     <p id="matchedImage"></p>
+                </div>
+                <div class="modal-footer" style="background-color: #d6e1ff">
+                    <a href="#!" class="modal-action waves-effect waves-green btn-flat next">Next</a>
+                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+                </div>
+            </div>
+            <div id="modal2" class="modal" style="background-color: #d6e1ff;">
+                <div class="modal-content">
+                    <h4>Please enter a name and post a photo link.</h4>
                 </div>
                 <div class="modal-footer" style="background-color: #d6e1ff">
                     <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
@@ -63,22 +71,23 @@
 </html>
 <script type="text/javascript">
 const questionArray = [
-    'Do you like to wear sleeveless flannel shirts?',
-    'Do you like to get things done?'
-    // ,
-    // 'Do you have 2 brothers named Darryl?', 
-    // 'Do you like to hang out at the Regal Beagle?',
-    // 'Do you sell used cars?',
-    // "Do you think you could kick Floyd Mayweather's ass if you were 50 years younger?",
-    // 'Do you dislike Mariachi music?',
-    // 'Does your brother repeatedly hit you in the face?'
-   ] ;
+    'You like to wear sleeveless flannel shirts.',
+    'You like to get things done.',
+    'You have more than one brother named Darryl.',
+    'You like to hang out at the Regal Beagle.',
+    'You like to sell used cars.',
+    "You think you could kick Floyd Mayweather's ass if you were 50 years younger.",
+    'You dislike Mariachi music.',
+    'Your brother repeatedly hits you in the face.',
+    'You were massively overpaid because you had one good day at work.',
+    'You are the real Soup Nazi.'
+];
 for (var key = 0; key < questionArray.length; key++) {
-    var num = key + 1;
-    var newDiv = $(`<h5><b>Question ${num}</b></h5>
+    let num = key + 1;
+    let newDiv = $(`<h5><b>Characteristic ${num}</b></h5>
                 <h5>${questionArray[key]}</h5>
                 <div class="row">
-                    <div class="col s3">
+                    <div class="col s5">
                        <select id="dropdown${num}">
                           <option value="" disabled selected>1 = Strongly Agree, 5 = Strongly Disagree</option>
                           <option value="1">1</option>
@@ -96,25 +105,46 @@ $('select').material_select();
 $(".button-collapse").sideNav();
 
 $(".btn-large").on("click", function(event) {
-    event.preventDefault();
+    event.preventDefault();    
     let answers = [];
-    for(let i = 0; i < questionArray.length; i++){
-        answers.push($('#dropdown' + (i+1) + ' option:selected').attr('value'))
+    for (let i = 0; i < questionArray.length; i++) {
+        answers.push($('#dropdown' + (i + 1) + ' option:selected').attr('value'))
     }
-    var newCharacter = {
-        name: $("#first_name").val().trim(),
-        photo: $("#photo").val().trim(),
-        scores: answers       
-    };
-
+    let name = $("#first_name").val().trim();
+    let photo = $("#photo").val().trim();
+    if (name && photo) {
+        var newCharacter = {
+            name: name,
+            photo: photo,
+            scores: answers
+        };
+        $('.btn-large').off('click');
+    }
+    else{
+        $('#modal2').modal('open');
+        return;
+    }
     $.post("/new", newCharacter)
         .done(function(data) {
-            console.log('*****************');
-            console.log(data);
-            console.log('*****************');
-            $('#matchedName').html(`<h4 style="text-align: center">${data[0].name} is your match!</h4><br>`);
-            $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[0].photo}">`);
-            $('#modal1').modal('open');
+            if (data.length > 1) {
+                $('#matchedName').html(`<h4 style="text-align: center">You have ${data.length} matches, ${data[0].name} is match 1!</h4><br>`);
+                $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[0].photo}">`);
+                $('#modal1').modal('open');
+                var count = 1;
+                $('.next').on('click', function(event) {
+                    if (count < data.length) {
+                        $('#matchedName').html(`<h4 style="text-align: center">${data[count].name} is match ${count + 1 }!</h4><br>`);
+                        $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[count].photo}">`);
+                        $('#modal1').modal('open');
+                        count += 1;
+                    }
+                })
+            } else {
+                $('.next').text('');
+                $('#matchedName').html(`<h4 style="text-align: center">${data[0].name} is your match!</h4><br>`);
+                $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[0].photo}">`);
+                $('#modal1').modal('open');
+            }
         });
 });
 </script>
