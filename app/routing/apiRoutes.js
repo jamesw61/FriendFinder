@@ -20,7 +20,7 @@ module.exports = (app) => {
                 matchedFriend = friends[j];
                 matchedPhoto = friends[j].photo;
                 minDiff = tot;
-                friendArray.push(matchedFriend);
+                friendArray.push(friends[j]);
                 }
             else if (tot == minDiff) {
                 matchedFriend = friends[j];

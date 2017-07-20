@@ -10,7 +10,7 @@
 </head>
 
 <body class="grey lighten-3">
-    <a href="#" data-activates="slide-out" class="button-collapse" style="position: fixed;"><i class="medium material-icons indigo-text">menu</i></a>
+    <a href="#" data-activates="slide-out" class="button-collapse" style="position: fixed;"><i class="medium material-icons indigo-text hide-on-small-only">menu</i></a>
     <ul id="slide-out" class="side-nav">
         <br>
         <br>
@@ -21,9 +21,10 @@
     <main>
         <div class="container">
             <div class="title">
-                <h3>Survey Questions</h3><br>
-                <h5><b>About You</b></h5><br><br>
-                <div class="row">
+                <h3>Survey Questions</h3>
+                <br>
+                <h5><b>About You</b></h5>
+                <div class="row" style="margin-top: 80px;">
                     <form class="col s12">
                         <div class="row">
                             <div class="input-field col s4">
@@ -41,28 +42,45 @@
                 </div>
                 <div class="questions">
                 </div>
-            </div><br>
-            <a class="waves-effect waves-light btn-large indigo"><i class="material-icons left">done</i>Submit</a><br><br>
+            </div>
             <br>
-            <div id="modal1" class="modal" style="background-color: #d6e1ff;">
+            <a class="waves-effect waves-light btn-large indigo"><i class="material-icons left">done</i>Submit</a>
+            <br>
+            <br>
+            <br>
+            <div id="modal1" class="modal">
                 <div class="modal-content">
                     <h4 id="matchedName"></h4>
                     <p id="matchedImage"></p>
                 </div>
-                <div class="modal-footer" style="background-color: #d6e1ff">
-                    <a href="#!" class="modal-action waves-effect waves-green btn-flat next">Next</a>
+                <div class="modal-footer">
+                    <!-- <a href="#!" class="modal-action waves-effect waves-green btn-flat next">Next</a> -->
                     <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
                 </div>
             </div>
-            <div id="modal2" class="modal" style="background-color: #d6e1ff;">
-                <div class="modal-content">
+            <div id="modal2" class="modal">
+                <div class="modal-content center-align">
                     <h4>Please enter a name and post a photo link.</h4>
                 </div>
-                <div class="modal-footer" style="background-color: #d6e1ff">
+                <div class="modal-footer">
                     <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
                 </div>
             </div>
         </div>
+        <footer class="page-footer indigo hide-on-med-and-up">
+            <div class="container">
+                <div class="row">
+                    <div class="col l6 s12 center-align">
+                        <h5><a href="/friends" class="white-text">API Friends List</a></h5>
+                    </div>
+                    <div class="col l3 s12">
+                    </div>
+                    <div class="col l3 s12 center-align">
+                        <h5><a class="white-text" href="https://github.com/jamesw61/FriendFinder" target="_blank">Github Repo</a></h5>
+                    </div>
+                </div>
+            </div>
+        </footer>
     </main>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
@@ -105,7 +123,7 @@ $('select').material_select();
 $(".button-collapse").sideNav();
 
 $(".btn-large").on("click", function(event) {
-    event.preventDefault();    
+    event.preventDefault();
     let answers = [];
     for (let i = 0; i < questionArray.length; i++) {
         answers.push($('#dropdown' + (i + 1) + ' option:selected').attr('value'))
@@ -119,32 +137,47 @@ $(".btn-large").on("click", function(event) {
             scores: answers
         };
         $('.btn-large').off('click');
-    }
-    else{
+    } else {
         $('#modal2').modal('open');
         return;
     }
     $.post("/new", newCharacter)
         .done(function(data) {
+            //*****************************
             if (data.length > 1) {
-                $('#matchedName').html(`<h4 style="text-align: center">You have ${data.length} matches, ${data[0].name} is match 1!</h4><br>`);
-                $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[0].photo}">`);
+                let newCarousel = $(`<div class="carousel"></div>`);
+                for (let key in data) {
+                    let newItem = $(`<a class="carousel-item center-align" style="color:black;" href="#key${key}!"><img class="circle" src="${data[key].photo}"><p>${data[key].name}</p></a>`);
+                    newCarousel.append(newItem);
+                }
+                $('#matchedName').html(`<h4 style="text-align: center">You have ${data.length} matches</h4>`);
+                $('#matchedName').after(newCarousel);
                 $('#modal1').modal('open');
-                var count = 1;
-                $('.next').on('click', function(event) {
-                    if (count < data.length) {
-                        $('#matchedName').html(`<h4 style="text-align: center">${data[count].name} is match ${count + 1 }!</h4><br>`);
-                        $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[count].photo}">`);
-                        $('#modal1').modal('open');
-                        count += 1;
-                    }
-                })
+                $('.carousel').carousel();
+
+
+                //*****************************
+                // if (data.length > 1) {
+                //     $('#matchedName').html(`<h4 style="text-align: center">You have ${data.length} matches, ${data[0].name} is match 1!</h4><br>`);
+                //     $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[0].photo}">`);
+                //     $('#modal1').modal('open');
+                //     var count = 1;
+                //     $('.next').on('click', function(event) {
+                //         if (count < data.length) {
+                //             $('#matchedName').html(`<h4 style="text-align: center">${data[count].name} is match ${count + 1 }!</h4><br>`);
+                //             $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[count].photo}">`);
+                //             $('#modal1').modal('open');
+                //             count += 1;
+                //         }
+                //     })
             } else {
-                $('.next').text('');
+                // $('.next').text('');
                 $('#matchedName').html(`<h4 style="text-align: center">${data[0].name} is your match!</h4><br>`);
                 $('#matchedImage').html(`<img style="display: block; margin: auto; border:4px solid #021a40; max-height: 300px" src="${data[0].photo}">`);
                 $('#modal1').modal('open');
             }
+            $(".btn-large").html(`<a href="/" id="download-button" class="btn-large waves-effect waves-light indigo">Start Over</a>`);
+
         });
 });
 </script>
