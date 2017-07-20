@@ -8,8 +8,6 @@ module.exports = (app) => {
         let minDiff = 100;
         let diff = 0;
         var friendArray = [];
-        var matchedFriend;
-        var matchedPhoto;
         for (let j in friends) {
             for (let i in user.scores) {
                 diff = Math.abs(parseInt(user.scores[i]) - parseInt(friends[j].scores[i]));
@@ -17,15 +15,11 @@ module.exports = (app) => {
             }
             if (tot < minDiff) {
                 friendArray = [];
-                matchedFriend = friends[j];
-                matchedPhoto = friends[j].photo;
                 minDiff = tot;
                 friendArray.push(friends[j]);
                 }
-            else if (tot == minDiff) {
-                matchedFriend = friends[j];
-                matchedPhoto = friends[j].photo;
-                friendArray.push(matchedFriend);
+            else if (tot === minDiff) {
+                friendArray.push(friends[j]);
             }
             tot=0;
         }
